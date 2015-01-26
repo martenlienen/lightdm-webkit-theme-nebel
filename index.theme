@@ -1,0 +1,6 @@
+[theme]
+name=nebel
+description=A theme with semitransparent controls
+engine=lightdm-webkit-greeter
+url=index.html
+session=gnome
