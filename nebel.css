@@ -39,22 +39,25 @@ body {
   opacity: 1;
 }
 
-.users li label {
-  margin-right: 50px;
+.users li form {
+  clear: both;
 }
 
 .users li input {
+  float: right;
+  padding: 0;
   width: 250px;
 
   background-color: rgba(0, 0, 0, 0);
+  border-width: 0;
   border-color: rgba(0, 0, 0, 0);
+  outline: none;
 
   font-size: 20px;
   color: rgb(129, 143, 126);
   text-align: center;
 
   opacity: 0;
-  outline: none;
 
   transition: opacity 1;
 }
