@@ -85,13 +85,13 @@ body {
   opacity: 1;
 }
 
-.button-row {
+.power-management-buttons {
   position: absolute;
   bottom: 20px;
   right: 20px;
 }
 
-.button-row button {
+.power-management-buttons button {
   margin-right: 10px;
   background: rgba(0, 0, 0, 0);
   border: rgba(0, 0, 0, 0);
@@ -102,6 +102,6 @@ body {
   transition: opacity 1s;
 }
 
-.button-row button:hover {
+.power-management-buttons button:hover {
   opacity: 0.8;
 }
