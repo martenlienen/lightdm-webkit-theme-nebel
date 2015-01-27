@@ -61,3 +61,24 @@ body {
 .users li:hover input, .users li.selected input {
   opacity: 1;
 }
+
+.button-row {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+}
+
+.button-row button {
+  margin-right: 10px;
+  background: rgba(0, 0, 0, 0);
+  border: rgba(0, 0, 0, 0);
+  outline: none;
+  opacity: 0.3;
+  color: rgb(129, 143, 126);
+
+  transition: opacity 1s;
+}
+
+.button-row button:hover {
+  opacity: 0.8;
+}

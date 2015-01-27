@@ -5,6 +5,9 @@ var li = React.createFactory("li");
 var form = React.createFactory("form");
 var label = React.createFactory("label");
 var input = React.createFactory("input");
+var div = React.createFactory("div");
+var button = React.createFactory("button");
+var i = React.createFactory("i");
 
 var UserItem = React.createClass({
   getInitialState: function () {
@@ -80,7 +83,7 @@ var UserList = React.createClass({
     return ul({ className: "users" }, items);
   },
   onKeyUp: function (event) {
-    if (event.altKey) {
+    if (event.altKey && !event.shiftKey) {
       if (event.keyCode === 78) {
         // Alt+n
         this.setState({ selected: (this.state.selected + 1) % this.props.users.length });
@@ -89,6 +92,77 @@ var UserList = React.createClass({
         this.setState({ selected: (this.state.selected + this.props.users.length - 1) % this.props.users.length });
       }
     }
+  }
+});
+
+var Button = React.createClass({
+  componentDidMount: function () {
+    window.addEventListener("keyup", this.onKeyUp);
+  },
+  componentWillUnmount: function () {
+    window.removeEventListener("keyup", this.onKeyUp);
+  },
+  render: function () {
+    return button(
+      { onClick: this.executeAction },
+      i({ title: this.capitalize(this.props.action),
+          className: "fa fa-4x fa-" + this.props.icon }));
+  },
+  executeAction: function () {
+    lightdm[this.props.action]();
+  },
+  onKeyUp: function (event) {
+    if (this.props.keyCode && event.altKey && event.shiftKey && event.keyCode === this.props.keyCode) {
+      this.executeAction();
+    }
+  },
+  capitalize: function (string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
+});
+
+var ButtonRow = React.createClass({
+  statics: {
+    buttons: [
+      {
+        action: "hibernate",
+        keyCode: 72, // Alt+Shift+h
+        icon: "leaf"
+      },
+      {
+        action: "suspend",
+        keyCode: 83, // Alt+Shift+s
+        icon: "pause"
+      },
+      {
+        action: "restart",
+        keyCode: 82, // Alt+Shift+r
+        icon: "refresh"
+      },
+      {
+        action: "poweroff",
+        keyCode: 80, // Alt+Shift+p
+        icon: "power-off"
+      }
+    ]
+  },
+  render: function () {
+    var buttons = [];
+
+    ButtonRow.buttons.forEach(function (spec) {
+      if (lightdm["can_" + spec.action]) {
+        var button = React.createElement(
+          Button,
+          { key: spec.action,
+            action: spec.action,
+            keyCode: spec.keyCode,
+            icon: spec.icon});
+
+        buttons.push(button);
+      }
+    });
+
+    return div({ className: "button-row" }, buttons);
   }
 });
 
@@ -110,8 +184,8 @@ function authentication_complete () {
   }
 }
 
-function initialize () {
-  var container = document.getElementById("container");
+function initializeUsers () {
+  var container = document.getElementById("users-container");
   var component = React.createElement(
     UserList,
     {
@@ -126,4 +200,12 @@ function initialize () {
   React.render(component, container);
 }
 
-window.addEventListener("load", initialize);
+function initializeButtons () {
+  var container = document.getElementById("buttons-container");
+  var component = React.createElement(ButtonRow);
+
+  React.render(component, container);
+}
+
+window.addEventListener("load", initializeUsers);
+window.addEventListener("load", initializeButtons);
