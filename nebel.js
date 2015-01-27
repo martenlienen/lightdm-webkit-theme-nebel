@@ -38,7 +38,8 @@ var UserItem = React.createClass({
   },
   render: function () {
     return li(
-      { className: cx({ selected: this.props.selected }) },
+      { className: cx({ selected: this.props.selected }),
+        onClick: this.props.onClick },
       form(
         { onSubmit: this.login },
         label(
@@ -88,11 +89,11 @@ var UserList = React.createClass({
     var items = this.props.users.map(function (user, index) {
       return React.createElement(
         UserItem,
-        {
-          key: user.name,
+        { key: user.name,
           user: user,
           selected: index == list.state.selected,
-          onLogin: list.props.onLogin.bind(list, user.name) });
+          onLogin: list.props.onLogin.bind(list, user.name),
+          onClick: list.select.bind(list, index) });
     });
 
     return ul({ className: "users" }, items);
@@ -101,12 +102,15 @@ var UserList = React.createClass({
     if (event.altKey && !event.shiftKey) {
       if (event.keyCode === 78) {
         // Alt+n
-        this.setState({ selected: (this.state.selected + 1) % this.props.users.length });
+        this.select((this.state.selected + 1) % this.props.users.length);
       } else if (event.keyCode === 80) {
         // Alt+p
-        this.setState({ selected: (this.state.selected + this.props.users.length - 1) % this.props.users.length });
+        this.select((this.state.selected + this.props.users.length - 1) % this.props.users.length);
       }
     }
+  },
+  select: function (index) {
+    this.setState({ selected: index });
   }
 });
 
