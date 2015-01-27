@@ -9,9 +9,63 @@ if (typeof lightdm == "undefined") {
     suspend: console.log.bind(console, "suspend"),
     restart: console.log.bind(console, "restart"),
     poweroff: console.log.bind(console, "poweroff"),
-    users: [{name: "cqql"}, {name: "alf"}]
+    default_session: "default",
+    users: [
+      { name: "cqql", password: "password" },
+      { name: "alf", password: "cat" }
+    ],
+    start_authentication: function (username) {
+      lightdm.authentication_user = username;
+
+      window.show_prompt("Password?");
+    },
+    provide_secret: function (password) {
+      var username = lightdm.authentication_user;
+
+      lightdm.is_authenticated = false;
+      lightdm.users.forEach(function (user) {
+        if (user.name === username && user.password === password) {
+          lightdm.is_authenticated = true;
+        }
+      });
+
+      window.authentication_complete();
+    },
+    login: function (username, session) {
+      console.log("Log into session " + session + " as " + username);
+    }
   };
 }
+
+// This is called by lightdm, but I could not figured out, what it is supposed
+// to do.
+function show_message (msg) {
+  alert("Message: " + msg);
+}
+
+var authenticator = {
+  login: function (username, password) {
+    var deferred = Q.defer();
+
+    window.show_prompt = function (msg) {
+      lightdm.provide_secret(password);
+    };
+
+    window.authentication_complete = function () {
+      if (lightdm.is_authenticated) {
+        deferred.resolve();
+
+        lightdm.login(lightdm.authentication_user, lightdm.default_session);
+      } else {
+        deferred.reject();
+      }
+    };
+
+    lightdm.start_authentication(username);
+
+    return deferred.promise;
+  }
+};
 
 var cx = React.addons.classSet;
 
@@ -38,7 +92,8 @@ var UserItem = React.createClass({
   },
   render: function () {
     return li(
-      { className: cx({ selected: this.props.selected }),
+      { ref: "li",
+        className: cx({ selected: this.props.selected }),
         onClick: this.props.onClick },
       form(
         { onSubmit: this.login },
@@ -56,7 +111,24 @@ var UserItem = React.createClass({
   login: function (event) {
     event.preventDefault();
 
-    this.props.onLogin(this.state.password);
+    var item = this;
+
+    authenticator
+      .login(this.props.user.name, this.state.password)
+      .catch(function () {
+        item.setState({ password: "" });
+
+        var ref = item.refs["li"];
+
+        if (ref) {
+          var node = $(ref.getDOMNode());
+          node.addClass("error");
+
+          node.on("webkitAnimationEnd", function () {
+            node.removeClass("error");
+          });
+        }
+      });
   },
   setPassword: function (event) {
     this.setState({ password: event.target.value });
@@ -92,7 +164,6 @@ var UserList = React.createClass({
         { key: user.name,
           user: user,
           selected: index == list.state.selected,
-          onLogin: list.props.onLogin.bind(list, user.name),
           onClick: list.select.bind(list, index) });
     });
 
@@ -185,35 +256,9 @@ var ButtonRow = React.createClass({
   }
 });
 
-function show_message (msg) {
-  alert("Message: " + msg);
-}
-
-var password = null;
-
-function show_prompt (msg) {
-  lightdm.provide_secret(password);
-}
-
-function authentication_complete () {
-  if (lightdm.is_authenticated) {
-    lightdm.login(lightdm.authentication_user, lightdm.default_session);
-  } else {
-    alert("Wrong password!?");
-  }
-}
-
 function initializeUsers () {
   var container = document.getElementById("users-container");
-  var component = React.createElement(
-    UserList,
-    {
-      users: lightdm.users,
-      onLogin: function (user, password) {
-        lightdm.start_authentication(user);
-        window.password = password;
-      }
-    });
+  var component = React.createElement(UserList, { users: lightdm.users });
 
   React.render(component, container);
 }
