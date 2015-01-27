@@ -1,3 +1,18 @@
+// Stub out the lightdm object for development in the browser
+if (typeof lightdm == "undefined") {
+  var lightdm = {
+    can_hibernate: true,
+    can_suspend: true,
+    can_restart: true,
+    can_poweroff: true,
+    hibernate: console.log.bind(console, "hibernate"),
+    suspend: console.log.bind(console, "suspend"),
+    restart: console.log.bind(console, "restart"),
+    poweroff: console.log.bind(console, "poweroff"),
+    users: [{name: "cqql"}, {name: "alf"}]
+  };
+}
+
 var cx = React.addons.classSet;
 
 var ul = React.createFactory("ul");
@@ -190,7 +205,6 @@ function initializeUsers () {
     UserList,
     {
       users: lightdm.users,
-      //users: [{name: "cqql"}, {name: "grrt"}],
       onLogin: function (user, password) {
         lightdm.start_authentication(user);
         window.password = password;
