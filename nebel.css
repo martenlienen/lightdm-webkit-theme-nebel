@@ -117,7 +117,7 @@ body {
   border: rgba(0, 0, 0, 0);
   outline: none;
   opacity: 0.3;
-  color: rgb(129, 143, 126);
+  color: rgb(220, 220, 220);
 
   transition: opacity 1s;
 }
