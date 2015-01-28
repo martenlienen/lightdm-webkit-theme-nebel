@@ -19,12 +19,12 @@ sudo vim /etc/lightdm/lightdm-webkit-greeter.conf
 
 In the login screen you can use the following shortcuts
 
-- *Alt+n*: Next user
-- *Alt+p*: Previous user
-- *Shift+Alt+p*: Power off
-- *Shift+Alt+r*: Restart
-- *Shift+Alt+s*: Suspend
-- *Shift+Alt+h*: Hibernate
+- *Ctrl-n*: Next user
+- *Ctrl-p*: Previous user
+- *Alt-p*: Power off
+- *Alt-r*: Restart
+- *Alt-s*: Suspend
+- *Alt-h*: Hibernate
 
 ## Wallpaper
 

@@ -134,7 +134,7 @@ var UserList = React.createClass({
     return ul({ className: "users" }, items);
   },
   onKeyUp: function (event) {
-    if (event.altKey && !event.shiftKey) {
+    if (event.ctrlKey) {
       if (event.keyCode === 78) {
         // Alt+n
         this.select((this.state.selected + 1) % this.props.users.length);

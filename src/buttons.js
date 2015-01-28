@@ -5,7 +5,7 @@ var i = React.createFactory("i");
 /**
  * A button to trigger a power management functionality of LightDM
  *
- * The button can also be triggered with Shift+Alt+<some key>.
+ * The button can also be triggered with Alt-<some key>.
  */
 var PowerManagementButton = React.createClass({
   propTypes: {
@@ -32,7 +32,7 @@ var PowerManagementButton = React.createClass({
   },
   render: function () {
     var name = this.capitalize(this.props.action);
-    var title = name + " (Shift+Alt+" + this.props.skey + ")";
+    var title = name + " (Alt-" + this.props.skey + ")";
 
     return button(
       { onClick: this.executeAction },
@@ -45,7 +45,7 @@ var PowerManagementButton = React.createClass({
   onKeyUp: function (event) {
     var code = this.props.skey.toUpperCase().charCodeAt(0);
 
-    if (event.altKey && event.shiftKey && event.keyCode === code) {
+    if (event.altKey && event.keyCode === code) {
       this.executeAction();
     }
   },
