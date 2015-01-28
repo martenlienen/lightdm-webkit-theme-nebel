@@ -10,6 +10,8 @@ if (typeof lightdm == "undefined") {
     restart: console.log.bind(console, "restart"),
     poweroff: console.log.bind(console, "poweroff"),
     default_session: "default",
+    timed_login_delay: 0,
+    timed_login_user: undefined,
     users: [
       { name: "cqql", password: "password" },
       { name: "alf", password: "cat" }
@@ -29,10 +31,21 @@ if (typeof lightdm == "undefined") {
         }
       });
 
-      window.authentication_complete();
+      if (lightdm.is_authenticated) {
+        window.authentication_complete();
+      } else {
+        // LightDM let's you wait a bit, if you did not get it right
+        window.setTimeout(window.authentication_complete, 3000);
+      }
     },
     login: function (username, session) {
       console.log("Log into session " + session + " as " + username);
     }
   };
+
+  if (lightdm.timed_login_delay > 0) {
+    window.setTimeout(function () {
+      timed_login(lightdm.timed_login_user);
+    }, lightdm.timed_login_delay * 1000);
+  }
 }

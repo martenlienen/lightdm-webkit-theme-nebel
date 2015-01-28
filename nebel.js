@@ -1,153 +1,67 @@
-}
+var authProcess = null;
 
-// This is called by lightdm, but I could not figured out, what it is supposed
-// to do.
+/**
+ * LightDM hook to show a message to the user
+ */
 function show_message (msg) {
-  alert("Message: " + msg);
+  console.log(msg);
 }
 
-var authenticator = {
-  login: function (username, password) {
-    var deferred = Q.defer();
+/**
+ * LightDM hook to prompt the user for information
+ *
+ * This is always used to ask for the password.
+ */
+function show_prompt (prompt) {
+  lightdm.provide_secret(authProcess.password);
+}
 
-    window.show_prompt = function (msg) {
-      lightdm.provide_secret(password);
-    };
+/**
+ * LightDM hook, that is called when an authentication process completes
+ *
+ * This is called, when LightDM has authorized or denied the authentication
+ * process. Note that this is called with a delay of several seconds in the case
+ * of a wrong password.
+ */
+function authentication_complete () {
+  if (lightdm.is_authenticated) {
+    authProcess.deferred.resolve();
 
-    window.authentication_complete = function () {
-      if (lightdm.is_authenticated) {
-        deferred.resolve();
-
-        lightdm.login(lightdm.authentication_user, lightdm.default_session);
-      } else {
-        deferred.reject();
-      }
-    };
-
-    lightdm.start_authentication(username);
-
-    return deferred.promise;
+    lightdm.login(lightdm.authentication_user, lightdm.default_session);
+  } else {
+    authProcess.deferred.reject();
   }
-};
+}
 
-var cx = React.addons.classSet;
-
-var ul = React.createFactory("ul");
-var li = React.createFactory("li");
-var form = React.createFactory("form");
-var label = React.createFactory("label");
-var input = React.createFactory("input");
-
-var UserItem = React.createClass({
-  getInitialState: function () {
-    return {
-      password: ""
-    };
-  },
-  componentDidMount: function () {
-    this.focusPasswordInput();
-  },
-  componentDidUpdate: function () {
-    this.focusPasswordInput();
-  },
-  render: function () {
-    return li(
-      { ref: "li",
-        className: cx({ selected: this.props.selected }),
-        onClick: this.props.onClick },
-      form(
-        { onSubmit: this.login },
-        label(
-          {},
-          this.props.user.name),
-        input(
-          {
-            ref: "password-input",
-            type: "password",
-            placeholder: "Password",
-            value: this.state.password,
-            onChange: this.setPassword })));
-  },
-  login: function (event) {
-    event.preventDefault();
-
-    var item = this;
-
-    authenticator
-      .login(this.props.user.name, this.state.password)
-      .catch(function () {
-        item.setState({ password: "" });
-
-        var ref = item.refs["li"];
-
-        if (ref) {
-          var node = $(ref.getDOMNode());
-          node.addClass("error");
-
-          node.on("webkitAnimationEnd", function () {
-            node.removeClass("error");
-          });
-        }
-      });
-  },
-  setPassword: function (event) {
-    this.setState({ password: event.target.value });
-  },
-  focusPasswordInput: function () {
-    if (this.props.selected) {
-      var ref = this.refs["password-input"];
-
-      if (ref) {
-        ref.getDOMNode().focus();
-      }
-    }
-  }
-});
-
-var UserList = React.createClass({
-  getInitialState: function () {
-    return {
-      selected: 0
-    };
-  },
-  componentDidMount: function () {
-    window.addEventListener("keyup", this.onKeyUp);
-  },
-  componentWillUnmount: function () {
-    window.removeEventListener("keyup", this.onKeyUp);
-  },
-  render: function () {
-    var list = this;
-    var items = this.props.users.map(function (user, index) {
-      return React.createElement(
-        UserItem,
-        { key: user.name,
-          user: user,
-          selected: index == list.state.selected,
-          onClick: list.select.bind(list, index) });
-    });
-
-    return ul({ className: "users" }, items);
-  },
-  onKeyUp: function (event) {
-    if (event.altKey && !event.shiftKey) {
-      if (event.keyCode === 78) {
-        // Alt+n
-        this.select((this.state.selected + 1) % this.props.users.length);
-      } else if (event.keyCode === 80) {
-        // Alt+p
-        this.select((this.state.selected + this.props.users.length - 1) % this.props.users.length);
-      }
-    }
-  },
-  select: function (index) {
-    this.setState({ selected: index });
-  }
-});
+/**
+ * LightDM hook to log in a user when the timed login timer runs out
+ *
+ * You can configure LightDM to log you in as some user if you do not choose
+ * another user during the first x seconds. Then this will be called with the
+ * username of this default user.
+ */
+function timed_login (username) {
+  lightdm.login(lightdm.timed_login_user);
+}
 
 function initializeUsers () {
   var container = document.getElementById("users-container");
-  var component = React.createElement(UserList, { users: lightdm.users });
+  var component = React.createElement(
+    UserList,
+    {
+      users: lightdm.users,
+      login: function (username, password) {
+        authProcess = {
+          deferred: Q.defer(),
+          password: password
+        };
+
+        lightdm.start_authentication(username);
+
+        return authProcess.deferred.promise;
+      }
+    }
+  );
 
   React.render(component, container);
 }

@@ -6,16 +6,11 @@ body {
 .users {
   position: absolute;
   top: 30%;
-  width: 400px;
   margin: 0;
   margin-left: 30px;
   padding: 0;
 
   list-style: none;
-}
-
-.users form {
-  margin-bottom: 0;
 }
 
 .users li {
@@ -59,7 +54,13 @@ body {
 }
 
 .users li form {
-  clear: both;
+  display: inline-block;
+  margin-bottom: 0;
+}
+
+.users li label {
+  display: inline-block;
+  width: 150px;
 }
 
 .users li input {
@@ -83,6 +84,14 @@ body {
 
 .users li:hover input, .users li.selected input {
   opacity: 1;
+}
+
+.users li i {
+  visibility: hidden;
+}
+
+.users li.locked i {
+  visibility: visible;
 }
 
 .power-management-buttons {
