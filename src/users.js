@@ -134,14 +134,12 @@ var UserList = React.createClass({
     return ul({ className: "users" }, items);
   },
   onKeyUp: function (event) {
-    if (event.ctrlKey) {
-      if (event.keyCode === 78) {
-        // Alt+n
-        this.select((this.state.selected + 1) % this.props.users.length);
-      } else if (event.keyCode === 80) {
-        // Alt+p
-        this.select((this.state.selected + this.props.users.length - 1) % this.props.users.length);
-      }
+    if ((event.ctrlKey && event.keyCode === 78) || event.keyCode === 40) {
+      // Ctrl-n or arrow down
+      this.select((this.state.selected + 1) % this.props.users.length);
+    } else if ((event.ctrlKey && event.keyCode === 80) || event.keyCode == 38) {
+      // Ctrl-p or arrow up
+      this.select((this.state.selected + this.props.users.length - 1) % this.props.users.length);
     }
   },
   select: function (index) {
