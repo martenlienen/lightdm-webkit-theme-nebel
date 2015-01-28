@@ -7,7 +7,11 @@
 ### From AUR
 
 ```sh
+# Use your preferred AUR helper
 yaourt lightdm-webkit-theme-nebel
+
+# Set webkit-theme=nebel
+sudo vim /etc/lightdm/lightdm-webkit-greeter.conf
 ```
 
 ### Manually
