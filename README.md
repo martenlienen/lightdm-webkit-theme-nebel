@@ -2,6 +2,12 @@
 
 ## Installation
 
+### From AUR
+
+```sh
+yaourt lightdm-webkit-theme-nebel
+```
+
 ### Manually
 
 ```sh
