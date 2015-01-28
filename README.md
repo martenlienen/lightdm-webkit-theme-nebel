@@ -25,3 +25,11 @@ In the login screen you can use the following shortcuts
 - *Shift+Alt+r*: Restart
 - *Shift+Alt+s*: Suspend
 - *Shift+Alt+h*: Hibernate
+
+## Wallpaper
+
+The [wallpaper](https://www.flickr.com/photos/jvoves/6939745762) was
+photographed by [Joseph Voves](http://josephvoves.com/) and released under
+[CC BY 2.0](https://creativecommons.org/licenses/by/2.0/).
+
+To use another one, overwrite `wallpaper.jpg`.
