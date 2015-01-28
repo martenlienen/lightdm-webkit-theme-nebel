@@ -94,6 +94,14 @@ body {
   opacity: 1;
 }
 
+/* If the user clicks somewhere, we actually lose focus for a few milliseconds
+ * before the input is refocused. So we hide the placeholder in the selected
+ * input, so that it does not flash up.
+ */
+.users li.selected input::-webkit-input-placeholder {
+  color: transparent;
+}
+
 .users li i {
   display: inline-block;
   margin-left: 20px;

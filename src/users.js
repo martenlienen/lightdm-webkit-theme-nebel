@@ -35,6 +35,18 @@ var UserItem = React.createClass({
   },
   componentDidMount: function () {
     this.focusPasswordInput();
+
+    var ref = this.refs["password-input"];
+
+    if (ref) {
+      var item = this;
+
+      ref.getDOMNode().addEventListener("blur", function (event) {
+        // If we focus before the event is processed, the focus may be removed
+        // anyway
+        window.setTimeout(item.focusPasswordInput, 0);
+      });
+    }
   },
   componentDidUpdate: function () {
     this.focusPasswordInput();
