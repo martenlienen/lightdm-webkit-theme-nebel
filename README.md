@@ -1,4 +1,6 @@
-# A semitransparent lightdm greeter theme
+# A semitransparent LightDM greeter theme
+
+![nebel](http://i.imgur.com/OlomEce.png)
 
 ## Installation
 
