@@ -14,7 +14,8 @@ if (typeof lightdm == "undefined") {
     timed_login_user: undefined,
     users: [
       { name: "cqql", password: "password" },
-      { name: "alf", password: "cat" }
+      { name: "alf", password: "cat" },
+      { name: "e.t.", password: "telephone" }
     ],
     start_authentication: function (username) {
       lightdm.authentication_user = username;
