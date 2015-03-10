@@ -76,7 +76,7 @@ var PowerManagementButtons = React.createClass({
         icon: "refresh"
       },
       {
-        action: "poweroff",
+        action: "shutdown",
         key: "p",
         icon: "power-off"
       }
